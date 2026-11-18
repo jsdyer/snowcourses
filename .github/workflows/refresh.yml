@@ -1,0 +1,36 @@
+name: Refresh source records
+on:
+  schedule:
+    - cron: '33 19 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: data-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+      - name: Fetch and validate
+        run: |
+          python3 scripts/refresh.py
+          python3 -m unittest discover -s tests
+          python3 scripts/build.py
+      - name: Save the snapshot and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! git diff --quiet -- web; then
+            git add web
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "Refresh published source records"
+            git push origin HEAD:main
+          fi
+          gh workflow run pages.yml --ref main
