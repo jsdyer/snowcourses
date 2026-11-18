@@ -29,22 +29,23 @@ def main():
                 errors = []
                 page.on("pageerror", lambda error: errors.append(str(error)))
                 page.goto(f"http://127.0.0.1:{server.server_port}/example-tool/")
-                page.locator("#sample").click()
-                assert page.locator("#output").input_value() == "Halifax\nLangley\nVancouver"
-                assert "1 duplicate removed" in page.locator("#status").inner_text()
-                page.locator("#input").fill('<img src=x onerror="alert(1)">\n<img src=x onerror="alert(1)">')
-                assert page.locator("#output").input_value() == '<img src=x onerror="alert(1)">'
-                assert page.locator("img").count() == 0
-                page.locator("#clear").click()
-                assert page.locator("#output").input_value() == ""
-                page.locator("#sample").click()
+
+                page.locator("#rows tr").first.wait_for()
+                assert page.locator("#station").input_value()=="3A01"
+                page.locator("#period").select_option("04-01")
+                assert "Grouse" in page.locator("#summary").inner_text()
+                assert page.locator("#rows tr").count()>10
+                page.locator("#metric").select_option("2")
+                page.locator("#mode").select_option("Automated station")
+                assert "16:00 UTC" in page.locator("#scope").inner_text()
+                assert page.locator("#rows tr").count()>1
                 page.screenshot(path=str(screenshots / "desktop.png"), full_page=True)
                 page.set_viewport_size({"width": 390, "height": 844})
                 assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
                 page.screenshot(path=str(screenshots / "mobile.png"), full_page=True)
                 assert not errors, errors
                 browser.close()
-            print("Browser checks passed: project subpath, sample, clear, safe text and mobile layout")
+            print("Browser checks passed: project subpath, source data, filtering and mobile layout")
         finally:
             server.shutdown()
 
