@@ -1,5 +1,8 @@
 name: Refresh source records
 on:
+  push:
+    branches: [main]
+    paths: ['scripts/refresh.py', '.github/workflows/refresh.yml']
   schedule:
     - cron: '33 19 * * *'
   workflow_dispatch:
