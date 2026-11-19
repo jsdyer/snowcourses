@@ -3,8 +3,12 @@
 [Open Snow Courses](https://coolcode.ca/snowcourses/) to compare the same survey period at a B.C. snow course across years, or the same calendar date at one of six Fraser basin automated stations.
 
 <!-- coolcode:guide -->
-Try Grouse Mountain’s April survey, then select Barkerville under Automated station to compare the same date across earlier winters. The table separates missing readings, reported zeros and source flags.
+Try Grouse Mountain’s April survey, then select Barkerville under Automated station to compare the same date across earlier winters. Follow the full October–September season against earlier same-period medians, inspect sample sizes and share the station, measurement, date and year in one link.
 <!-- /coolcode:guide -->
+
+## Following one snow season
+
+The seasonal graph follows October through September at the selected station. It plots that winter’s latest reading for each nominal survey period or automated date, alongside the median of earlier winters for that date. Each earlier winter supplies one median per period. Flagged readings remain visible in the selected year and are excluded from earlier-year medians. The table reports dates, flags, missing measurements and baseline sample sizes. The dashed line and solid line use the same scale. A missing numeric measurement breaks the line.
 
 ## Reading a comparison
 

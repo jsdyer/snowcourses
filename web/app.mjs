@@ -1,6 +1,8 @@
 import {byId as el, element, option, loadData,csvDownload} from "./shared.mjs";
 import {comparison} from "./model.mjs";
+import {renderSeason} from "./season.mjs";
 let courses,visible=[];
+let initial=new URLSearchParams(location.search);
 function pLabel(key) {
   return new Intl.DateTimeFormat("en-CA",{month:"short",day:"numeric",timeZone:"UTC"}).format(new Date("2000-"+key+"T12:00:00Z"));
 }
@@ -10,8 +12,8 @@ function course(){return courses[el("station").value];}
 function showStations() {
   const pool=Object.entries(courses).filter(([,s])=>s.mode===el("mode").value).sort((a,b)=>a[1].name.localeCompare(b[1].name));
   el("station").replaceChildren(...pool.map(([key,s])=>option(key,s.name+" · "+key)));
-  const initial=el("mode").value==="Manual survey"?"3A01":"1A03P";
-  if(courses[initial])el("station").value=initial;
+  const preferred=initial?.get("station");
+  el("station").value=pool.some(([key])=>key===preferred)?preferred:el("mode").value==="Manual survey"?"3A01":"1A03P";
   showPeriods();
 }
 function showPeriods(){
@@ -19,10 +21,11 @@ function showPeriods(){
   const periods=[...new Set(rows.map(r=>r[1]))].sort();
   el("period").replaceChildren(...periods.map(key=>option(key,pLabel(key))));
   el("period").value=course().mode==="Automated station"?rows[rows.length-1][1]:(periods.includes(current)?current:periods.includes("04-01")?"04-01":periods[0]);
+  if(periods.includes(initial?.get("period")))el("period").value=initial.get("period");
   showYears();
 }
 function showYears(){
-  const previous=el("year").value;
+  const previous=initial?.get("year")??el("year").value;
   const {years}=comparison(course().readings,el("period").value,9999,3);
   el("year").replaceChildren(...years.map(y=>option(String(y))));
   if(years.includes(Number(previous)))el("year").value=previous;
@@ -38,6 +41,10 @@ function render(){
     "Readings at 16:00 UTC on "+pLabel(period)+". Snow depth is available from the current hourly file. The historical automated archive supplies water equivalent.";
   el("stats").replaceChildren(stat("Snow depth · "+selected[0],value(selected[2]," cm")),stat("Water equivalent · "+selected[0],value(selected[3]," mm")),
     stat("Earlier same-period median · "+n+" years",value(reference,unit)));
+  renderSeason(station,period,year,idx);
+  const link=new URL(location.href);
+  link.search=new URLSearchParams({station:el("station").value,period,year,metric:idx});
+  el("share").href=link.href;
   const bars=visible.filter(r=>r[idx]!==null).slice(0,20).reverse();
   const max=Math.max(1,...bars.map(r=>r[idx]));
   const chart=el("chart");chart.replaceChildren();
@@ -55,5 +62,10 @@ try{
  el("mode").onchange=()=>{el("year").replaceChildren();el("period").replaceChildren();showStations()};
  el("station").onchange=showPeriods;el("period").onchange=showYears;el("year").onchange=render;el("metric").onchange=render;
  el("download").onclick=()=>csvDownload("snowcourses-"+el("station").value+"-"+el("period").value+".csv",[["Station","Date","Nominal period","Snow depth cm","Water equivalent mm","Survey flag"],...visible.map(r=>[el("station").value,...r])]);
- showStations();
+ const linked=courses[initial.get("station")];
+ if(linked)el("mode").value=linked.mode;
+ if(["2","3"].includes(initial.get("metric")))el("metric").value=initial.get("metric");
+ showStations();initial=null;
+ let lastWidth=0;
+ new ResizeObserver(([entry])=>{const width=entry.contentRect.width;if(width!==lastWidth){lastWidth=width;render();}}).observe(el("season-plot"));
 }catch{el("edition").textContent="Unable to load the published observations. Try reloading or use the provincial source below.";}

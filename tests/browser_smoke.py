@@ -34,6 +34,12 @@ def main():
                 assert page.locator("#station").input_value()=="3A01"
                 page.locator("#period").select_option("04-01")
                 assert "Grouse" in page.locator("#summary").inner_text()
+                assert page.locator("#season-plot svg path").count()==2
+                assert page.locator("#season-body tr").count()>=3
+                link=page.locator("#share").get_attribute("href")
+                page.goto(link)
+                page.locator("#season-plot svg").wait_for()
+                assert page.locator("#period").input_value()=="04-01"
                 assert page.locator("#rows tr").count()>10
                 page.locator("#metric").select_option("2")
                 page.locator("#mode").select_option("Automated station")

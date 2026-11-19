@@ -31,3 +31,10 @@ footer{border-top:1px solid var(--line);padding:1rem 0 2rem} .skip{position:abso
 #chart{margin-top:1rem;font-size:.84rem}#chart small{color:var(--muted)}
 .bars{display:flex;align-items:flex-end;gap:clamp(2px,1vw,8px);height:135px;border-bottom:1px solid var(--ink);margin:.6rem 0 .3rem;max-width:770px}
 .bars div{flex:1;background:#6a98aa}.bars .selected{background:#174961}
+
+.season{margin:1.2rem 0;padding:clamp(.7rem,2vw,1.4rem);background:#fffefa;border:1px solid var(--line)}
+.season h3{font:normal clamp(1.65rem,4vw,2.4rem) Georgia,serif}.season details{margin-top:1rem}
+.season summary{cursor:pointer;font-weight:650}#season-plot svg{width:100%;display:block}#season-plot text{font:12px system-ui;fill:#425b64}
+#season-measure,.key{font-size:.85rem;color:var(--muted)}.key{margin:.65rem 0;display:flex;gap:.45rem 1.3rem;flex-wrap:wrap}
+.key span::before{content:"";display:inline-block;border-top:3px solid #006386;width:1.6rem;margin-right:.35rem;vertical-align:middle}
+.key span+span::before{border-color:#79715c;border-top-style:dashed}#departure{font-weight:650}#share{display:inline-block;margin-top:.7rem}

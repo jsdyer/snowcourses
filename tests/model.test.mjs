@@ -9,3 +9,14 @@ test("same surveyed period compares eligible prior years and preserves zeros",()
 test("a January survey conducted in December belongs to the following January",()=>{
  const rows=[["2025-12-30","01-01",30,99,""]];assert.equal(comparison(rows,"01-01",2026,3).selected[3],99);
 });
+
+import {seasonSeries} from '../web/model.mjs';
+test('nominal January visits in December belong to the upcoming winter and prior flags are excluded', () => {
+  const rows=[['2023-12-29','01-01',1,10,''],['2024-01-01','01-01',3,30,''],
+    ['2024-12-31','01-01',5,50,'X'],['2025-12-30','01-01',7,70,'']];
+  const winter=seasonSeries(rows,'01-01',2026,3);
+  assert.equal(winter.endYear,2026);
+  assert.equal(winter.series[0].value,70);
+  assert.equal(winter.series[0].typical,20);
+  assert.equal(winter.series[0].count,1);
+});
