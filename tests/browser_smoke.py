@@ -35,6 +35,7 @@ def main():
                 page.locator("#period").select_option("04-01")
                 assert "Grouse" in page.locator("#summary").inner_text()
                 assert page.locator("#season-plot svg path").count()==2
+                assert page.locator("#chart svg circle").count()>10
                 assert page.locator("#season-body tr").count()>=3
                 link=page.locator("#share").get_attribute("href")
                 page.goto(link)

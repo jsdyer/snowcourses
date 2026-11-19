@@ -1,6 +1,6 @@
 import {byId as el, element, option, loadData,csvDownload} from "./shared.mjs";
 import {comparison} from "./model.mjs";
-import {renderSeason} from "./season.mjs";
+import {renderSeason,renderPeriodHistory} from "./season.mjs";
 let courses,visible=[];
 let initial=new URLSearchParams(location.search);
 function pLabel(key) {
@@ -45,14 +45,7 @@ function render(){
   const link=new URL(location.href);
   link.search=new URLSearchParams({station:el("station").value,period,year,metric:idx});
   el("share").href=link.href;
-  const bars=visible.filter(r=>r[idx]!==null).slice(0,20).reverse();
-  const max=Math.max(1,...bars.map(r=>r[idx]));
-  const chart=el("chart");chart.replaceChildren();
-  const title=element("p","Latest "+bars.length+" recorded values · "+(idx===3?"water equivalent (mm)":"snow depth (cm)"));
-  const graph=element("div");graph.className="bars";
-  for(const row of bars){const bar=element("div");bar.style.height=Math.max(2,Math.round(row[idx]/max*100))+"%";bar.title=row[0]+" · "+value(row[idx],unit)+(row[4]?" · "+row[4]:"");if(row===selected)bar.className="selected";graph.append(bar);}
-  if(bars.length)chart.append(title,graph,element("small",bars[0][0]+" to "+bars.at(-1)[0]+". Exact observations appear below."));
-  else chart.append(element("p","No numeric readings for this measurement."));
+  renderPeriodHistory(visible,selected,idx,unit);
   el("summary").textContent=visible.length+" entries for "+station.name+" · "+pLabel(period)+(station.elevation?" · "+station.elevation+" m elevation":"");
   el("rows").replaceChildren(...visible.map(r=>{const tr=element("tr");tr.dataset.selected=String(r===selected);for(const x of [r[0],value(r[2]),value(r[3]),r[4]||"—"])tr.append(element("td",x));return tr;}));
 }

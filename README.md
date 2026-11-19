@@ -12,7 +12,7 @@ The seasonal graph follows October through September at the selected station. It
 
 ## Reading a comparison
 
-Snow depth is measured in centimetres. Snow water equivalent is the depth in millimetres of water contained in that snow. Use the measurement selector to switch the chart and historical median. The chart shows the 20 newest numeric observations for the selected period, and the CSV and table contain the complete matching series. The comparison year selects a reading and changes which earlier years enter the median. Where several readings share a period and year, the summary uses the last reading, and each earlier year contributes its median of eligible values.
+Snow depth is measured in centimetres. Snow water equivalent is the depth in millimetres of water contained in that snow. Use the measurement selector to switch the chart and historical median. The period chart plots every numeric observation on a dated axis. Open markers identify source flags. The CSV and table also retain missing readings. The comparison year selects a reading and changes which earlier years enter the median. Where several readings share a period and year, the summary uses the last reading, and each earlier year contributes its median of eligible values.
 
 Manual courses use the province’s nominal survey periods, such as April 1, even when the field crew visited a few days earlier or later. The observation date stays visible. Source flags are shown in the table. Flagged manual records and missing values do not enter the historical median. A measured numeric zero does. Some archived courses no longer report.
 

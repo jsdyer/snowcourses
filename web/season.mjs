@@ -57,3 +57,35 @@ export function renderSeason(station,period,year,index) {
     table.append(tr);
   }
 }
+
+// Each plotted point remains an observation, including repeat visits within a period.
+export function renderPeriodHistory(rows, selected, index, unit) {
+  const root=byId('chart');
+  const points=rows.filter(row=>Number.isFinite(row[index])).sort((a,b)=>a[0].localeCompare(b[0]));
+  if(points.length<2) {
+    root.replaceChildren(element('p',points.length ? 'One numeric observation for this period: '+points[0][0]+' · '+format(points[0][index])+unit+'.' : 'No numeric readings for this measurement and period.'));
+    return;
+  }
+  const width=Math.max(300,Math.min(890,root.clientWidth||700)), left=49, right=width-15;
+  const first=Date.parse(points[0][0]), last=Date.parse(points.at(-1)[0]);
+  const max=Math.max(1,...points.map(row=>row[index]));
+  const x=row=>left+(right-left)*(Date.parse(row[0])-first)/Math.max(1,last-first);
+  const y=v=>150-130*v/max;
+  const svg=mark('svg',{viewBox:'0 0 '+width+' 178',role:'img','aria-label':'All measured observations for this date or survey period. Exact measurements appear in the survey records table.'});
+  for(const fraction of [0,.5,1]){
+    const v=fraction*max;
+    svg.append(mark('line',{x1:left,x2:right,y1:y(v),y2:y(v),stroke:'#cbd9dd'}),
+      mark('text',{x:left-6,y:y(v)+4,'text-anchor':'end'},format(v)));
+  }
+  for(const [row,anchor] of [[points[0],'start'],[points.at(-1),'end']]){
+    svg.append(mark('text',{x:x(row),y:172,'text-anchor':anchor},row[0].slice(0,4)));
+  }
+  for(const row of points){
+    const chosen=row===selected,cx=x(row),cy=y(row[index]);
+    svg.append(mark('line',{x1:cx,x2:cx,y1:y(0),y2:cy,stroke:chosen?'#00466a':'#a9c8d3','stroke-width':chosen?3:1.3}));
+    const dot=mark('circle',{cx,cy,r:chosen?4.5:2.6,fill:row[4]?'#fffefa':chosen?'#00466a':'#4c8398',stroke:'#376a80'});
+    dot.append(mark('title',{},row[0]+' · '+format(row[index])+unit+(row[4]?' · '+row[4]:'')));svg.append(dot);
+  }
+  root.replaceChildren(element('p',points.length+' observations · '+(index===3?'Water equivalent (mm)':'Snow depth (cm)')),svg,
+    element('small','Dark marker: selected reading. Open markers: source-flagged readings.'));
+}
