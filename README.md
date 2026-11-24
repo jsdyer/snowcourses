@@ -23,3 +23,11 @@ The automatic series covers Yellowhead Lake, McBride Upper, Barkerville, Mount T
 The [Province of British Columbia’s data package](https://github.com/bcgov/bcsnowdata) documents the [manual archive](https://www.env.gov.bc.ca/wsd/data_searches/snow/asws/data/allmss_archive.csv), [current manual surveys](https://www.env.gov.bc.ca/wsd/data_searches/snow/asws/data/allmss_current.csv), [daily automated water archive](https://www.env.gov.bc.ca/wsd/data_searches/snow/asws/data/SW_DailyArchive.csv), [current water equivalent](https://www.env.gov.bc.ca/wsd/data_searches/snow/asws/data/SW.csv) and [current depth](https://www.env.gov.bc.ca/wsd/data_searches/snow/asws/data/SD.csv). Contains information licensed under the Open Government Licence – British Columbia.
 
 A daily GitHub Action fetches the five files, validates coverage and publishes the complete snapshot. Data retrieved records the successful download in UTC. Latest source date records the newest included numeric observation. A failed refresh preserves the last published comparison. Run `python3 scripts/refresh.py`, `node --test tests/*.test.mjs`, `python3 -m unittest discover -s tests` and `python3 scripts/build.py`. Source preparation is independent of the offline static build.
+
+<!-- schedule-reliability -->
+## Schedule reliability
+
+Public GitHub repositories can have scheduled workflows disabled after 60 days of inactivity. A separate weekly [schedule guard](.github/workflows/schedule-guard.yml) calls GitHub's enable-workflow API for an explicit list of refresh workflows and itself. It can restore workflows disabled for inactivity, preserves manually disabled workflows, and runs independently of collection failures.
+
+This is an interim mitigation, not a scheduling guarantee: GitHub does not document active-workflow renewal as a permanent exemption, and scheduled runs can be delayed or dropped. A scheduler on our own Linux server is the planned independent trigger. The guard does not collect data, create dummy commits, or change source/check timestamps; successful collection and published data freshness still need monitoring.
+<!-- /schedule-reliability -->
