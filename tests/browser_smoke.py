@@ -32,6 +32,9 @@ def main():
 
                 page.locator("#rows tr").first.wait_for()
                 assert page.locator("#station").input_value()=="3A01"
+                assert "Grouse" in page.locator("#departure").inner_text()
+                assert "Water equivalent measured" in page.locator("#departure").inner_text()
+                assert "earlier winters" in page.locator("#departure").inner_text()
                 page.locator("#period").select_option("04-01")
                 assert "Grouse" in page.locator("#summary").inner_text()
                 assert page.locator("#season-plot svg path").count()==2
@@ -43,6 +46,7 @@ def main():
                 assert page.locator("#period").input_value()=="04-01"
                 assert page.locator("#rows tr").count()>10
                 page.locator("#metric").select_option("2")
+                assert "Snow depth measured" in page.locator("#departure").inner_text()
                 page.locator("#mode").select_option("Automated station")
                 assert "16:00 UTC" in page.locator("#scope").inner_text()
                 assert page.locator("#rows tr").count()>1

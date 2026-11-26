@@ -46,9 +46,13 @@ export function renderSeason(station,period,year,index) {
   byId('season-measure').textContent=metric+' ('+unit+')';
   const chosen=series.find(p=>p.period===period);
   const delta=chosen?.value!=null && chosen.typical!=null ? chosen.value-chosen.typical : null;
-  byId('departure').textContent=delta===null?'A departure requires a measured value and an earlier comparison.':
-    'On '+chosen.observed+', '+metric.toLowerCase()+' was '+(delta===0?'equal to':format(Math.abs(delta))+' '+unit+' '+(delta>0?'above':'below'))+
-    ' the median for this period across '+chosen.count+' earlier winters.'+(chosen.flag?' Source flag: '+chosen.flag+'.':'');
+  const location=station.name+' · '+(chosen?.observed || year);
+  const reading=chosen?.value==null ? 'No '+metric.toLowerCase()+' reading for this period.' :
+    metric+' measured '+format(chosen.value)+' '+unit+'.';
+  const comparison=delta===null ? (chosen?.value==null ? '' : ' No earlier median is available for this measurement and period.') :
+    ' That is '+(delta===0?'equal to':format(Math.abs(delta))+' '+unit+' '+(delta>0?'above':'below'))+
+    ' the median for this period across '+chosen.count+' earlier winters.';
+  byId('departure').textContent=location+'. '+reading+comparison+(chosen?.flag?' Source flag: '+chosen.flag+'.':'');
   root.replaceChildren(svg);
   const table=byId('season-body');table.replaceChildren();
   for(const p of series) {
