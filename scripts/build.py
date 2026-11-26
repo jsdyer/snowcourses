@@ -7,6 +7,7 @@ import re
 import shutil
 import tempfile
 from urllib.parse import urlsplit
+from profiles import publish_profiles
 
 ROOT = Path(__file__).resolve().parents[1]
 SLUG = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
@@ -61,6 +62,7 @@ def build(root=ROOT):
         if re.search(r"\{\{[A-Z_]+\}\}", page):
             raise ValueError("Unresolved template placeholder in web/index.html")
         index.write_text(page, encoding="utf-8")
+        publish_profiles(stage, tool)
         (stage / ".nojekyll").touch()
         if output.exists():
             shutil.rmtree(output)
